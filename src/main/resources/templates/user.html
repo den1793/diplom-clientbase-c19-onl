@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User page</title>
+
+</head>
+<body>
+
+
+User ID:  <td th:text="${user.getId()}">User ID</td> <br/>
+User name: <td th:text="${user.getUsername()}">User Username</td> <br/>
+User password:  <td th:text="${user.getPassword()}">User Password</td> <br/>
+User e-mail: <td th:text="${user.getEmail()}">User E-mail</td>
+
+<br/>
+<!--<div th:replace="~{_header}"></div>
+<form th:action="@{/user/registration}" th:object="${newUser}" th:method="post">
+
+    <input type="text" th:field="*{name}" placeholder="name">
+    <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+
+    <input type="text" th:field="*{lastname}" placeholder="lastname">
+    <p th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}"></p>
+
+    <input type="text" th:field="*{username}" placeholder="username">
+    <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+
+    <input type="text" th:field="*{email}" placeholder="email">
+    <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+
+    <input type="text" th:field="*{password}" placeholder="password">
+    <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+
+    <input type="text" th:field="*{telephone}" placeholder="telephone">
+    <p th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}"></p>
+
+    <input type="text" th:field="*{position}" placeholder="position">
+    <p th:if="${#fields.hasErrors('position')}" th:errors="*{position}"></p>
+
+    <button>Registration</button>
+
+</form>-->
+<!--<a th:href="@{/user/{id}/edit(id=${user.getId()})}">Edit user</a>-->
+
+<form th:method="GET" th:action="@{/user/{id}/edit(id=${user.getId()})}">
+    <input type="submit" value="Edit user">
+</form>
+
+<form th:method="DELETE" th:action="@{/user/{id}(id=${user.getId()})}">
+    <input type="submit" value="Delete">
+</form>
+</body>
+</html>

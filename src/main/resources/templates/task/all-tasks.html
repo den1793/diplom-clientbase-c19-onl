@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All-tasks</title>
+</head>
+<body>
+<div th:replace="~{_header}"></div>
+<form th:action="@{/task/all-tasks}" th:object="${tasks}" method="get" >
+
+
+
+    <hr>
+    <p>List of tasks:</p>
+    <div>
+        <table class="table">
+            <thead class="table-light">
+            <tr>
+                <th scope="col">Creator</th>
+                <th scope="col">Performer</th>
+                <th scope="col">Client</th>
+                <th scope="col">Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="task: ${tasks}">
+                <td th:text="${task.creator} + '  '"/>
+                <td th:text="${task.performer} + '  '"/>
+                <td th:text="${task.client} + '  '"/>
+                <td th:text="${task.description} + '  '"/>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <hr>
+
+</form>
+</body>
+</html>

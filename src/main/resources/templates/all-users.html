@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All-users</title>
+</head>
+<body>
+<div th:replace="~{_header}"></div>
+<form th:action="@{/all-users}" th:object="${users}" method="get" >
+
+
+
+    <hr>
+    <p>List of users:</p>
+
+    <div th:each="user : ${users}">
+        <a th:href="@{/user/{id}(id=${user.getId()})}"
+           th:text="${user.getUsername() + ' ' + user.getName()}">userName</a>
+
+    </div>
+    <!--<div>
+        <table class="table">
+            <thead class="table-light">
+            <tr>
+                <th scope="col">Username</th>
+                <th scope="col">Position</th>
+                <th scope="col">Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="client: ${users}">
+                <td th:text="${} + '  '"/>
+                <td th:text="${} + '  '"/>
+                <td th:text="${} + '  '"/>
+            </tr>
+            </tbody>
+        </table>
+    </div>-->
+    <hr>
+
+</form>
+</body>
+</html>
