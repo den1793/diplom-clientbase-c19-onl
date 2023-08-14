@@ -1,15 +1,15 @@
 package by.clientbase.diplomclientbasec19onl.controller;
 import by.clientbase.diplomclientbasec19onl.dto.ClientDTO;
+import by.clientbase.diplomclientbasec19onl.dto.TaskDTO;
 import by.clientbase.diplomclientbasec19onl.entity.Client;
+import by.clientbase.diplomclientbasec19onl.mapper.ClientMapper;
+import by.clientbase.diplomclientbasec19onl.mapper.TaskMapper;
 import by.clientbase.diplomclientbasec19onl.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -54,9 +54,21 @@ public class ClientController {
         return "/client/all-clients";
     }
 
-    /*@GetMapping("/all-clients")
-    public String showAllClients(Model model, HttpSession httpSession) {
-        model.addAttribute("clients", clientService.findAll());
-        return "/client/all-clients";
-    }*/
+    @GetMapping("/{id}/edit")
+    public String edit(Model model, @PathVariable("id") long id) {
+        model.addAttribute("client", clientService.findById(id));
+        return "/task/task";
+    }
+
+    @PostMapping("/{id}")
+    public String update(@ModelAttribute("client") @Valid ClientDTO clientDTO,
+                         BindingResult bindingResult,
+                         @PathVariable("id") Long id) {
+        if (bindingResult.hasErrors()) {
+            return "/client/client";
+        }
+
+        clientService.update(ClientMapper.toClient(clientDTO), id);
+        return "/client/client";
+    }
 }

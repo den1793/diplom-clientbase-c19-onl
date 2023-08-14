@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @author Denis Smirnov on 15.06.2023
+ * @author Denis Smirnov on 03.08.2023
  */
 public class UserMapper {
     public static SessionUser toSessionUser(User user) {
@@ -42,13 +42,4 @@ public class UserMapper {
         return userDTO;
     }
 
-//    public static List<UserRegistrationDTO> mapFromUserDTOListFromUsers(List<User> userList) {
-//        if (userList == null || userList.isEmpty()) {
-//            return null;
-//        } else {
-//            return userList.stream()
-//                    .map(UserMapper::mapFromUserToUserDto)
-//                    .collect(Collectors.toList());
-//        }
-//    }
 }

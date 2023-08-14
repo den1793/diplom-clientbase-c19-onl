@@ -2,6 +2,7 @@ package by.clientbase.diplomclientbasec19onl.dto;
 
 import by.clientbase.diplomclientbasec19onl.entity.Client;
 import by.clientbase.diplomclientbasec19onl.entity.Status;
+import by.clientbase.diplomclientbasec19onl.entity.Task;
 import by.clientbase.diplomclientbasec19onl.entity.User;
 import lombok.*;
 
@@ -40,4 +41,13 @@ public class TaskDTO {
     @Pattern(regexp = "^[a-zA-Z_.]*$")
     private String description;
 
+
+    /*public Task convertToTaskTask() {
+        Task task = new Task();
+        task.setCreator(this.creator);
+
+
+
+        return task;
+    }*/
 }

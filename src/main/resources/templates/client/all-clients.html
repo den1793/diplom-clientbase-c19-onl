@@ -11,7 +11,7 @@
 
 
     <hr>
-    <p>List of clients:</p>
+    <p>List of tasks:</p>
     <div>
         <table class="table">
             <thead class="table-light">
@@ -20,21 +20,14 @@
                 <th scope="col">Address</th>
                 <th scope="col">Description</th>
             </tr>
+            <div th:each="client : ${clients}">
+                <a th:href="@{/client/{id}(id=${client.getId()})}"
+                   th:text="${client.clientName + ' ' + client.addresses + ' ' + client.description}">userName</a>
+
+            </div>
             </thead>
-            <tbody>
-            <tr th:each="client: ${clients}">
-                <td th:text="${client.getClientName()} + '  '"/>
-                <td th:text="${client.addresses} + '  '"/>
-                <td th:text="${client.description} + '  '"/>
-            </tr>
-            </tbody>
         </table>
     </div>
-
-    <!--<div th:each="client : ${clients}">
-        <a th:href="@{/client/all-clients.html/{id}(id=${client.getId()})}" th:text="${client.getClientName()} ">clientName</a>
-        <a th:href="@{/client/all-clients.html/{id}(id=${client.getId()})}" th:text="${client.getAddresses()}">description</a>
-    </div>-->
     <hr>
 
 </form>

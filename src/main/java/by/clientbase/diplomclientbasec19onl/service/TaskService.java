@@ -43,33 +43,43 @@ public class TaskService {
 
         return taskRepository.save(task);
     }
-//    public Task save(TaskDTO taskDTO) {
-//        Task task = TaskMapper.toTask(taskDTO);
-//        return taskRepository.save(task);
-//    }
 
-    /*public boolean save(TaskDTO taskDTO) {
-        Task task = TaskMapper.toTask(taskDTO);
-        taskRepository.save(task);
-        return true;
-    }*/
 
     public Optional<Task> findById(long id) {
         return taskRepository.findById(id);
     }
 
-//    public List<Task> findAll() {
-//        return taskRepository.findAll();
-//    }
-
-    /*public List<TaskDTO> findAll() {
-        List<TaskDTO> taskDTOList = TaskMapper.mapFromTaskDTOListFromTasks(taskRepository.findAll());
-        return taskDTOList;
-    }*/
 
     public List<Task> findAll() {
         return taskRepository.findAll();
-
     }
+
+
+
+    public boolean update(Task task, long id) {
+
+        Task existTask = taskRepository.getById(id);
+
+        boolean checkParam = false;
+        if (task.getCreator() != null) {
+            existTask.setCreator(task.getCreator());
+            checkParam = true;
+        }
+
+        if (task.getPerformer() != null) {
+            existTask.setPerformer(task.getPerformer());
+            checkParam = true;
+        }
+        if (task.getClient() != null) {
+            existTask.setClient(task.getClient());
+            checkParam = true;
+        }
+        if (task.getDescription() != null) {
+            existTask.setDescription(task.getDescription());
+            checkParam = true;
+        }
+        return false;
+    }
+
 
 }

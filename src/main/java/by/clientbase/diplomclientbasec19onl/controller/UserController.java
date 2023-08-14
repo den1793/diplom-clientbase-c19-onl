@@ -1,6 +1,5 @@
 package by.clientbase.diplomclientbasec19onl.controller;
 
-import by.clientbase.diplomclientbasec19onl.dto.TaskDTO;
 import by.clientbase.diplomclientbasec19onl.dto.UserAuthorizationDTO;
 import by.clientbase.diplomclientbasec19onl.dto.UserRegistrationDTO;
 import by.clientbase.diplomclientbasec19onl.entity.SessionUser;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,6 +25,9 @@ import java.util.Optional;
 public class UserController {
     @Autowired
     private UserService userService;
+
+
+
 
 
     @GetMapping("/registration")
@@ -85,13 +86,13 @@ public class UserController {
         return "main";
     }
 
-    /*@GetMapping("/{id}")
+    @GetMapping("/{id}")
     public String showById(@PathVariable("id") long id, Model model) {
         Optional<User> optionalUser = userService.findUserById(id);
         User user = optionalUser.orElse(null);
         model.addAttribute("user", user);
         return "user";
-    }*/
+    }
 
     @GetMapping("/all-users")
     public String showAllUsers(Model model, HttpSession httpSession) {
@@ -104,4 +105,26 @@ public class UserController {
         userService.deleteUserById(id);
         return "redirect:/";
     }
+
+
+
+    @GetMapping("/{id}/edit")
+    public String edit(Model model, @PathVariable("id") long id) {
+        model.addAttribute("user", userService.findUserById(id));
+        return "/user";
+    }
+
+    @PostMapping("/{id}")
+    public String update(@ModelAttribute("user") @Valid UserRegistrationDTO userRegistrationDTO,
+                         BindingResult bindingResult,
+                         @PathVariable("id") Long id) {
+        if (bindingResult.hasErrors()) {
+            return "/user";
+        }
+        userService.update(userRegistrationDTO.convertToUserUser(), id);
+        return "/user";
+    }
+
+
+
 }

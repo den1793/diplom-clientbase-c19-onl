@@ -21,7 +21,7 @@ import javax.validation.constraints.Size;
 public class SessionUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Size(min = 3, max = 50)
     private String name;

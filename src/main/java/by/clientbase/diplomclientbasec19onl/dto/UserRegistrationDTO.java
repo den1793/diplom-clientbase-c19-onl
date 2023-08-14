@@ -2,6 +2,7 @@ package by.clientbase.diplomclientbasec19onl.dto;
 
 import by.clientbase.diplomclientbasec19onl.entity.Role;
 import by.clientbase.diplomclientbasec19onl.entity.Telephone;
+import by.clientbase.diplomclientbasec19onl.entity.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -48,4 +49,15 @@ public class UserRegistrationDTO {
     private String position;
 
 
+    public User convertToUserUser() {
+        User user = new User();
+        user.setUsername(this.username);
+        user.setPassword(this.password);
+        user.setName(this.name);
+        user.setLastname(this.lastname);
+        user.setPosition(this.position);
+        user.setEmail(this.email);
+
+        return user;
+    }
 }

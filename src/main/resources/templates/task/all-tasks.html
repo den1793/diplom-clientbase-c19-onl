@@ -21,15 +21,25 @@
                 <th scope="col">Client</th>
                 <th scope="col">Description</th>
             </tr>
+            <div th:each="task : ${tasks}">
+                <a th:href="@{/task/{id}(id=${task.getId()})}"
+                   th:text="${task.getCreator().username + ' ' + task.performer.username + ' ' + task.getClient().clientName + ' ' + task.getDescription()}">userName</a>
+
+            </div>
             </thead>
-            <tbody>
-            <tr th:each="task: ${tasks}">
-                <td th:text="${task.creator} + '  '"/>
+<!--            <tbody>-->
+            <!--<div th:each="task : ${tasks}">
+                <a th:href="@{/task/{id}(id=${task.getId()})}"
+                   th:text="${task.getCreator().username + ' ' + task.performer.username + ' ' + task.getClient().clientName + ' ' + task.getDescription()}">userName</a>
+
+            </div>-->
+            <!--<tr th:each="task: ${tasks}">
+                <td th:href="${task.creator} + '  '"/>
                 <td th:text="${task.performer} + '  '"/>
                 <td th:text="${task.client} + '  '"/>
                 <td th:text="${task.description} + '  '"/>
-            </tr>
-            </tbody>
+            </tr>-->
+<!--            </tbody>-->
         </table>
     </div>
     <hr>

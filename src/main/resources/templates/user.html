@@ -6,16 +6,9 @@
 
 </head>
 <body>
+<div th:replace="~{_header}"></div>
 
-
-User ID:  <td th:text="${user.getId()}">User ID</td> <br/>
-User name: <td th:text="${user.getUsername()}">User Username</td> <br/>
-User password:  <td th:text="${user.getPassword()}">User Password</td> <br/>
-User e-mail: <td th:text="${user.getEmail()}">User E-mail</td>
-
-<br/>
-<!--<div th:replace="~{_header}"></div>
-<form th:action="@{/user/registration}" th:object="${newUser}" th:method="post">
+    <form th:method="post" th:action="@{/user/{id}(id=${id})}" th:object="${user}">
 
     <input type="text" th:field="*{name}" placeholder="name">
     <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
@@ -32,23 +25,41 @@ User e-mail: <td th:text="${user.getEmail()}">User E-mail</td>
     <input type="text" th:field="*{password}" placeholder="password">
     <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
 
-    <input type="text" th:field="*{telephone}" placeholder="telephone">
-    <p th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}"></p>
-
     <input type="text" th:field="*{position}" placeholder="position">
     <p th:if="${#fields.hasErrors('position')}" th:errors="*{position}"></p>
 
-    <button>Registration</button>
+    <button>Edit</button>
 
+</form>
+<!--<form th:action="@{/user/{id}}" th:object="${user}" method="get">
+
+
+    User ID:
+    <td th:text="${user.getId()}">User ID</td>
+    <br/>
+    User name:
+    <td th:text="${user.getUsername()}">User Username</td>
+    <br/>
+    User password:
+    <td th:text="${user.getPassword()}">User Password</td>
+    <br/>
+    User e-mail:
+    <td th:text="${user.getEmail()}">User E-mail</td>
+
+    <br/>
+
+    <form th:method="get" th:action="@{/user/{id}/edit(id=${user.getId()})} " th:object="${user}">
+        <input type="submit" value="Edit user">
+    </form>
+    <form th:method="get" th:action="@{/{id}/edit(id=${user.getId()})}" th:object="${user}">
+        <input type="submit" value="Edit"/></form>&ndash;&gt;
+    <form th:method="get" th:action="@{/user/{id}/(id=${user.getId()})}" th:object="${user}">
+        <input type="submit" value="Edit1">
+    </form>
+
+    <form th:method="DELETE" th:action="@{/user/{id}(id=${user.getId()})}">
+        <input type="submit" value="Delete">
+    </form>
 </form>-->
-<!--<a th:href="@{/user/{id}/edit(id=${user.getId()})}">Edit user</a>-->
-
-<form th:method="GET" th:action="@{/user/{id}/edit(id=${user.getId()})}">
-    <input type="submit" value="Edit user">
-</form>
-
-<form th:method="DELETE" th:action="@{/user/{id}(id=${user.getId()})}">
-    <input type="submit" value="Delete">
-</form>
 </body>
 </html>

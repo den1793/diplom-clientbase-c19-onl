@@ -2,11 +2,13 @@ package by.clientbase.diplomclientbasec19onl.service;
 
 import by.clientbase.diplomclientbasec19onl.dto.ClientDTO;
 import by.clientbase.diplomclientbasec19onl.entity.Client;
+import by.clientbase.diplomclientbasec19onl.entity.Task;
 import by.clientbase.diplomclientbasec19onl.mapper.ClientMapper;
 import by.clientbase.diplomclientbasec19onl.repository.ClientRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Denis Smirnov on 14.06.2023
@@ -20,28 +22,10 @@ public class ClientService {
         this.clientRepository = clientRepository;
     }
 
-    /*public Client save(ClientDTO clientDTO) {
-        Client client = Client.builder()
-                .clientName(clientDTO.getClientName())
-                .addresses(List.of(Address.builder()
-                        .street(clientDTO.getAddress())
-                        .build()))
-                .description(clientDTO.getDescription())
-                .build();
-        return clientRepository.save(client);
-    }*/
     public void save(ClientDTO clientDTO) {
         Client client = ClientMapper.toClient(clientDTO);
         clientRepository.save(client);
     }
-
-
-
-    /*public boolean save(ClientDTO clientDTO) {
-        Client client = ClientMapper.toClient(clientDTO);
-        clientRepository.save(client);
-        return true;
-    }*/
 
     public Client findByClientName(String clientName) {
         return clientRepository.findByClientName(clientName);
@@ -52,9 +36,33 @@ public class ClientService {
 
     }
 
-    /*public List<Client> findAll() {
-        return clientRepository.findAll();
-    }*/
+    public Optional<Client> findById(long id) {
+        return clientRepository.findById(id);
+    }
+
+    public boolean update(Client client, long id) {
+
+
+        Client existClient = clientRepository.getById(id);
+
+        boolean checkParam = false;
+
+        if (client.getClientName() != null) {
+            existClient.setClientName(client.getClientName());
+            checkParam = true;
+        }
+
+        if (client.getAddresses() != null) {
+            existClient.setAddresses(client.getAddresses());
+            checkParam = true;
+        }
+
+        if (client.getDescription() != null) {
+            existClient.setDescription(client.getDescription());
+            checkParam = true;
+        }
+        return false;
+    }
 
 
 }
