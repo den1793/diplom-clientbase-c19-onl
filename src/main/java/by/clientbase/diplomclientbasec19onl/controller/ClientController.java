@@ -57,7 +57,7 @@ public class ClientController {
     @GetMapping("/{id}/edit")
     public String edit(Model model, @PathVariable("id") long id) {
         model.addAttribute("client", clientService.findById(id));
-        return "/task/task";
+        return "/client/client";
     }
 
     @PostMapping("/{id}")

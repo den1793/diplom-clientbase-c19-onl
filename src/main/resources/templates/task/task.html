@@ -10,14 +10,14 @@
 
 <form th:method="post" th:action="@{/task/{id}(id=${id})}" th:object="${task}">
 
-  <input type="text" th:field="*{creator}" placeholder="creator">
-  <p th:if="${#fields.hasErrors('creator')}" th:errors="*{creator}"></p>
+  <input type="text" th:field="*{creator.username}" placeholder="creator">
+  <p th:if="${#fields.hasErrors('creator')}" th:errors="*{creator.username}"></p>
 
-  <input type="text" th:field="*{performer}" placeholder="performer">
-  <p th:if="${#fields.hasErrors('performer')}" th:errors="*{performer}"></p>
+  <input type="text" th:field="*{performer.username}" placeholder="performer">
+  <p th:if="${#fields.hasErrors('performer')}" th:errors="*{performer.username}"></p>
 
-  <input type="text" th:field="*{client}" placeholder="client">
-  <p th:if="${#fields.hasErrors('client')}" th:errors="*{client}"></p>
+  <input type="text" th:field="*{client.clientName}" placeholder="client">
+  <p th:if="${#fields.hasErrors('client')}" th:errors="*{client.clientName}"></p>
 
   <input type="text" th:field="*{description}" placeholder="description">
   <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
