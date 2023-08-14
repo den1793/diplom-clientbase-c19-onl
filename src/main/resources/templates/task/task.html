@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Task</title>
+
+</head>
+<body>
+<div th:replace="~{_header}"></div>
+
+<form th:method="post" th:action="@{/task/{id}(id=${id})}" th:object="${task}">
+
+  <input type="text" th:field="*{creator}" placeholder="creator">
+  <p th:if="${#fields.hasErrors('creator')}" th:errors="*{creator}"></p>
+
+  <input type="text" th:field="*{performer}" placeholder="performer">
+  <p th:if="${#fields.hasErrors('performer')}" th:errors="*{performer}"></p>
+
+  <input type="text" th:field="*{client}" placeholder="client">
+  <p th:if="${#fields.hasErrors('client')}" th:errors="*{client}"></p>
+
+  <input type="text" th:field="*{description}" placeholder="description">
+  <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+
+
+  <button>Edit</button>
+
+</form>
+<!--<form th:action="@{/user/{id}}" th:object="${user}" method="get">
+
+
+    User ID:
+    <td th:text="${user.getId()}">User ID</td>
+    <br/>
+    User name:
+    <td th:text="${user.getUsername()}">User Username</td>
+    <br/>
+    User password:
+    <td th:text="${user.getPassword()}">User Password</td>
+    <br/>
+    User e-mail:
+    <td th:text="${user.getEmail()}">User E-mail</td>
+
+    <br/>
+
+   &lt;!&ndash; <form th:method="get" th:action="@{/user/{id}/edit(id=${user.getId()})} " th:object="${user}">
+        <input type="submit" value="Edit user">
+    </form>
+    <form th:method="get" th:action="@{/{id}/edit(id=${user.getId()})}" th:object="${user}">
+        <input type="submit" value="Edit"/></form>&ndash;&gt;
+    <form th:method="get" th:action="@{/user/{id}/(id=${user.getId()})}" th:object="${user}">
+        <input type="submit" value="Edit1">
+    </form>
+
+    <form th:method="DELETE" th:action="@{/user/{id}(id=${user.getId()})}">
+        <input type="submit" value="Delete">
+    </form>
+</form>-->
+</body>
+</html>
