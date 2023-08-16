@@ -1,58 +1,58 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Client</title>
+    <meta charset="UTF-8">
+    <title>Client</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0
+        }
 
+        .mb-3 {
+            margin-left: auto;
+            margin-right: auto;
+            width: 25%;
+        }
+
+        form {
+            padding: 50px
+        }
+    </style>
 </head>
 <body>
 <div th:replace="~{_header}"></div>
 
 <form th:method="post" th:action="@{/client/{id}(id=${id})}" th:object="${client}">
+    <div style="text-align: center;"><h2>Client information:</h2></div>
+    <div class="mb-3">
+        <label for="ClientName" class="form-label">Name of Client</label>
+        <input type="text" class="form-control" th:field="*{clientName}" id="ClientName">
+        <p th:if="${#fields.hasErrors('clientName')}" th:errors="*{clientName}"></p>
+    </div>
+    <div class="mb-3">
+        <label for="Address" class="form-label">Address of Client</label>
+        <input type="text" class="form-control" th:field="*{address}" id="Address">
+        <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></p>
+    </div>
+    <div class="mb-3">
+        <label for="Description" class="form-label">Description</label>
+        <input type="text" class="form-control" th:field="*{description}" id="Description">
+        <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+    </div>
 
 
-  <input type="text" th:field="*{clientName}" placeholder="creator">
-  <p th:if="${#fields.hasErrors('clientName')}" th:errors="*{clientName}"></p>
-
-  <input type="text" th:field="*{address}" placeholder="address">
-  <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></p>
-
-  <input type="text" th:field="*{description}" placeholder="description">
-  <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
-
-
-  <button>Edit</button>
+    <div style="text-align:center"><button  class="btn btn-secondary">Edit</button></div>
 
 </form>
-<!--<form th:action="@{/user/{id}}" th:object="${user}" method="get">
-
-
-    User ID:
-    <td th:text="${user.getId()}">User ID</td>
-    <br/>
-    User name:
-    <td th:text="${user.getUsername()}">User Username</td>
-    <br/>
-    User password:
-    <td th:text="${user.getPassword()}">User Password</td>
-    <br/>
-    User e-mail:
-    <td th:text="${user.getEmail()}">User E-mail</td>
-
-    <br/>
-
-   &lt;!&ndash; <form th:method="get" th:action="@{/user/{id}/edit(id=${user.getId()})} " th:object="${user}">
-        <input type="submit" value="Edit user">
-    </form>
-    <form th:method="get" th:action="@{/{id}/edit(id=${user.getId()})}" th:object="${user}">
-        <input type="submit" value="Edit"/></form>&ndash;&gt;
-    <form th:method="get" th:action="@{/user/{id}/(id=${user.getId()})}" th:object="${user}">
-        <input type="submit" value="Edit1">
-    </form>
-
-    <form th:method="DELETE" th:action="@{/user/{id}(id=${user.getId()})}">
-        <input type="submit" value="Delete">
-    </form>
-</form>-->
+<form th:method="DELETE" th:action="@{/user/{id}(id=${id})}">
+    <div style="text-align:center"><button  class="btn btn-secondary">Delete</button></div>
+</form>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
 </body>
 </html>

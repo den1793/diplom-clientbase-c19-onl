@@ -44,31 +44,12 @@ public class TaskController {
     }
 
 
-    @PostMapping("/create") // доработать, сделать маппер
+    @PostMapping("/create")
     public String addTask(@ModelAttribute("newTask") TaskDTO taskDTO, Model model) {
         taskService.save(taskDTO);
-        return "redirect:/";
+        return "redirect:/task/all-tasks";
     }
 
-   /* @PostMapping("/create")
-    public String addTask(@ModelAttribute("newTask") TaskDTO taskDTO, Model model) {
-        boolean isRegistered = taskService.save(taskDTO);
-        if (!isRegistered) {
-            model.addAttribute("message", "Task with this username is already exist");
-            model.addAttribute("newTask", taskDTO);
-            return "/task/create";
-        } else {
-            taskService.save(taskDTO);
-            return "redirect:/";
-        }
-    }*/
-
-    /*@GetMapping("/all-tasks")
-    public String showAllTasks(Model model, HttpSession httpSession) {
-        List<Task> tasks = taskService.findAll();
-        model.addAttribute("tasks", tasks);
-        return "/task/all-tasks";
-    }*/
 
     @GetMapping("/all-tasks")
     public String showAllTasks(Model model, HttpSession httpSession) {
@@ -99,6 +80,11 @@ public class TaskController {
 
        taskService.update(TaskMapper.toTask(taskDTO), id);
         return "/task/task";
+    }
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable("id") long id) {
+        taskService.deleteTaskById(id);
+        return "redirect:/task/all-tasks";
     }
 
 }

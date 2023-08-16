@@ -1,6 +1,9 @@
 package by.clientbase.diplomclientbasec19onl.dto;
 
+import by.clientbase.diplomclientbasec19onl.entity.Address;
+import by.clientbase.diplomclientbasec19onl.entity.Client;
 import by.clientbase.diplomclientbasec19onl.entity.Telephone;
+import by.clientbase.diplomclientbasec19onl.entity.User;
 import lombok.*;
 
 import javax.persistence.CascadeType;
@@ -24,8 +27,11 @@ public class ClientDTO {
     private String clientName;
 
     private String address;
+
     private String description;
 
 //    @OneToMany(cascade = CascadeType.ALL)
 //    private List<Telephone> telephones;
+
+
 }

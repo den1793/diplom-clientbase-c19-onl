@@ -44,6 +44,14 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
+    public void deleteTaskById(long id) {
+        taskRepository.deleteById(id);
+    }
+
+    public boolean existsByName(Task task){
+        return taskRepository.existsById(task.getId());
+    }
+
 
     public Optional<Task> findById(long id) {
         return taskRepository.findById(id);
@@ -77,6 +85,10 @@ public class TaskService {
         if (task.getDescription() != null) {
             existTask.setDescription(task.getDescription());
             checkParam = true;
+        }
+        if (checkParam) {
+            taskRepository.save(existTask);
+            return true;
         }
         return false;
     }

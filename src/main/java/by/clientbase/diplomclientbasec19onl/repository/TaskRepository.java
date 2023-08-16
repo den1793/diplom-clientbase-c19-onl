@@ -12,6 +12,7 @@ import java.util.Optional;
  * @author Denis Smirnov on 14.06.2023
  */
 public interface TaskRepository extends JpaRepository<Task, Long> {
+    boolean existsById(Long id);
 
 
 }

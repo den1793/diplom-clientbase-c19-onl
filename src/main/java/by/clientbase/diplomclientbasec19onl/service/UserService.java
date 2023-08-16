@@ -3,6 +3,7 @@ package by.clientbase.diplomclientbasec19onl.service;
 import by.clientbase.diplomclientbasec19onl.dto.UserAuthorizationDTO;
 import by.clientbase.diplomclientbasec19onl.dto.UserDTO;
 import by.clientbase.diplomclientbasec19onl.dto.UserRegistrationDTO;
+import by.clientbase.diplomclientbasec19onl.entity.Role;
 import by.clientbase.diplomclientbasec19onl.entity.User;
 import by.clientbase.diplomclientbasec19onl.mapper.UserMapper;
 import by.clientbase.diplomclientbasec19onl.mapper.UserMapper;
@@ -13,20 +14,24 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Denis Smirnov on 14.06.2023
  */
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
-    //    @Autowired
+    @Autowired
     private final UserRepository userRepository;
 
     UserService(UserRepository userRepository) {
@@ -35,6 +40,8 @@ public class UserService {
 
     public boolean save(UserRegistrationDTO userRegistrationDTO) {
         User user = UserMapper.toUser(userRegistrationDTO);
+        user.setRoles(Set.of(Role.USER));
+        user.setPassword(passwordEncoder().encode(user.getPassword()));
         userRepository.save(user);
         return true;
     }
@@ -52,7 +59,22 @@ public class UserService {
         }
 
     }
-
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> byUsername = Optional.ofNullable(userRepository.findByUsername(username));
+        if (byUsername.isPresent()) {
+            return byUsername.get();
+        }
+        throw new UsernameNotFoundException("");
+    }
+    private BCryptPasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+    public void add(User user) {
+        user.setRoles(Set.of(Role.USER));
+        user.setPassword(passwordEncoder().encode(user.getPassword()));
+        userRepository.save(user);
+    }
 
     public User login(UserAuthorizationDTO authorizationDTO) {
         return userRepository.findByUsername(authorizationDTO.getUsername());

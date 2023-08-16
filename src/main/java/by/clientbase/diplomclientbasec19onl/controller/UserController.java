@@ -52,6 +52,7 @@ public class UserController {
         }
     }
 
+
     @GetMapping("/authorization")
     public String auth(Model model) {
         model.addAttribute("authUser", new UserAuthorizationDTO());
@@ -103,7 +104,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") long id) {
         userService.deleteUserById(id);
-        return "redirect:/";
+        return  "redirect:/user/all-users";
     }
 
 

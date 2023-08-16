@@ -61,7 +61,15 @@ public class ClientService {
             existClient.setDescription(client.getDescription());
             checkParam = true;
         }
+        if (checkParam) {
+            clientRepository.save(existClient);
+            return true;
+        }
         return false;
+    }
+
+    public void deleteClientById(long id) {
+        clientRepository.deleteById(id);
     }
 
 

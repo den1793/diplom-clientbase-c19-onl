@@ -2,6 +2,7 @@ package by.clientbase.diplomclientbasec19onl.controller;
 import by.clientbase.diplomclientbasec19onl.dto.ClientDTO;
 import by.clientbase.diplomclientbasec19onl.dto.TaskDTO;
 import by.clientbase.diplomclientbasec19onl.entity.Client;
+import by.clientbase.diplomclientbasec19onl.entity.Task;
 import by.clientbase.diplomclientbasec19onl.mapper.ClientMapper;
 import by.clientbase.diplomclientbasec19onl.mapper.TaskMapper;
 import by.clientbase.diplomclientbasec19onl.service.ClientService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Denis Smirnov on 14.06.2023
@@ -43,7 +45,7 @@ public class ClientController {
             return "/client/create";
         } else {
             clientService.save(clientDTO);
-            return "redirect:/";
+            return "redirect:/client/all-clients";
         }
     }
 
@@ -52,6 +54,14 @@ public class ClientController {
         List<Client> clients = clientService.findAll();
         model.addAttribute("clients", clients);
         return "/client/all-clients";
+    }
+
+    @GetMapping("/{id}")
+    public String showById(@PathVariable("id") long id, Model model) {
+        Optional<Client> optionalClient = clientService.findById(id);
+        Client client = optionalClient.orElse(null);
+        model.addAttribute("client", client);
+        return "client/client";
     }
 
     @GetMapping("/{id}/edit")
@@ -70,5 +80,11 @@ public class ClientController {
 
         clientService.update(ClientMapper.toClient(clientDTO), id);
         return "/client/client";
+    }
+
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable("id") long id) {
+        clientService.deleteClientById(id);
+        return "redirect:/client/all-clients";
     }
 }

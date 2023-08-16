@@ -1,35 +1,36 @@
-/*
 package by.clientbase.diplomclientbasec19onl.configuration;
 
 import by.clientbase.diplomclientbasec19onl.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-*/
 /**
- * @author Denis Smirnov on 26.06.2023
- *//*
+ * @author Denis Smirnov on 14.06.2023
+ */
 
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 
     @Autowired
     private UserService userService;
 
-    public SecurityConfiguration(UserService userService) {
-        this.userService = userService;
-    }
+//    public SecurityConfiguration(UserService userService) {
+//        this.userService = userService;
+//    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-//                .csrf().disable()
+               .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/", "/user/registration").permitAll()
                 .anyRequest().authenticated()
@@ -37,7 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
                 .formLogin()
                 .loginPage("/user/authorization").permitAll()
                 .and()
-                .logout().permitAll();
+                .logout().permitAll().logoutSuccessUrl("/");
 
 
 //                .defaultSuccessUrl("/")
@@ -56,11 +57,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
         return new BCryptPasswordEncoder();
     }
 
-    */
-/*@Override
+@Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
-    }*//*
+    }
 
 }
-*/

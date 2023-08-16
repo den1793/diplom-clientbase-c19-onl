@@ -34,14 +34,4 @@ public class ClientMapper {
         client.setAddresses(client.getAddresses());
         return clientDTO;
     }
-
-    public static List<ClientDTO> mapFromClientDTOListFromClients(List<Client> clientList) {  //// уточнить и разобраться, возможно, переделать
-        if (clientList == null || clientList.isEmpty()) {
-            return null;
-        } else {
-            return clientList.stream()
-                    .map(ClientMapper::toDto)
-                    .collect(Collectors.toList());
-        }
-    }
 }

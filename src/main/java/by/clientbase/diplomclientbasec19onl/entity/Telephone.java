@@ -22,7 +22,8 @@ public class Telephone {
 
     private String number;
 
-
-
-
+    @Override
+    public String toString() {
+        return  number;
+    }
 }

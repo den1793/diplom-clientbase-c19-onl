@@ -42,12 +42,4 @@ public class TaskDTO {
     private String description;
 
 
-    /*public Task convertToTaskTask() {
-        Task task = new Task();
-        task.setCreator(this.creator);
-
-
-
-        return task;
-    }*/
 }
