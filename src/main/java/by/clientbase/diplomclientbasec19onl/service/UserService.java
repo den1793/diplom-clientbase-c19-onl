@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Denis Smirnov on 14.06.2023
@@ -38,11 +40,16 @@ public class UserService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
+    private final Logger log = Logger.getLogger(UserService.class.getName());
+
     public boolean save(UserRegistrationDTO userRegistrationDTO) {
+
+
         User user = UserMapper.toUser(userRegistrationDTO);
         user.setRoles(Set.of(Role.USER));
         user.setPassword(passwordEncoder().encode(user.getPassword()));
         userRepository.save(user);
+        log.log(Level.INFO, "User saved" + userRegistrationDTO.getUsername());
         return true;
     }
 

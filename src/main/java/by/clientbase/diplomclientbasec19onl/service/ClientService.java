@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Denis Smirnov on 14.06.2023
@@ -18,6 +20,8 @@ public class ClientService {
 
     private ClientRepository clientRepository;
 
+    private final Logger log = Logger.getLogger(ClientService.class.getName());
+
     ClientService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
@@ -25,6 +29,8 @@ public class ClientService {
     public void save(ClientDTO clientDTO) {
         Client client = ClientMapper.toClient(clientDTO);
         clientRepository.save(client);
+        log.log(Level.INFO, "Client saved " + clientDTO.getClientName());
+
     }
 
     public Client findByClientName(String clientName) {
