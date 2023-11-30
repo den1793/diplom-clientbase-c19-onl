@@ -1,17 +1,16 @@
 package by.clientbase.diplomclientbasec19onl.service;
 
-import by.clientbase.diplomclientbasec19onl.dto.UserAuthorizationDTO;
-import by.clientbase.diplomclientbasec19onl.dto.UserDTO;
 import by.clientbase.diplomclientbasec19onl.dto.UserRegistrationDTO;
-import by.clientbase.diplomclientbasec19onl.entity.Role;
+import by.clientbase.diplomclientbasec19onl.enums.Role;
 import by.clientbase.diplomclientbasec19onl.entity.User;
 import by.clientbase.diplomclientbasec19onl.mapper.UserMapper;
-import by.clientbase.diplomclientbasec19onl.mapper.UserMapper;
+
 import by.clientbase.diplomclientbasec19onl.repository.UserRepository;
 
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,36 +19,32 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+
+import javax.transaction.Transactional;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * @author Denis Smirnov on 14.06.2023
- */
+
 @Service
+@Transactional
 public class UserService implements UserDetailsService {
 
     @Autowired
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
 
-    UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     private final Logger log = Logger.getLogger(UserService.class.getName());
 
     public boolean save(UserRegistrationDTO userRegistrationDTO) {
 
+        User user = UserMapper.INSTANCE.dtoToUser(userRegistrationDTO);
 
-        User user = UserMapper.toUser(userRegistrationDTO);
-        user.setRoles(Set.of(Role.USER));
-        user.setPassword(passwordEncoder().encode(user.getPassword()));
+        user.setRoles(Set.of(Role.ADMIN));
+        user.setPassword(passwordEncoder().encode(userRegistrationDTO.getPassword()));
+
         userRepository.save(user);
-        log.log(Level.INFO, "User saved" + userRegistrationDTO.getUsername());
+        log.log(Level.INFO, "User saved " + userRegistrationDTO.getUsername());
         return true;
     }
 
@@ -57,35 +52,25 @@ public class UserService implements UserDetailsService {
         userRepository.deleteById(id);
     }
 
-    public User findByUsername(String username) {
-        Optional<User> user = Optional.ofNullable(userRepository.findByUsername(username));
-        if (user.isPresent()) {
-            return user.get();
-        } else {
-            throw new UsernameNotFoundException("User with this username doesn't exist!");
-        }
+    public Optional<User> findByUsername(String username) {
 
+        return userRepository.findByUsername(username);
     }
+
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> byUsername = Optional.ofNullable(userRepository.findByUsername(username));
+        Optional<User> byUsername = userRepository.findByUsername(username);
         if (byUsername.isPresent()) {
             return byUsername.get();
         }
-        throw new UsernameNotFoundException("");
-    }
-    private BCryptPasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-    public void add(User user) {
-        user.setRoles(Set.of(Role.USER));
-        user.setPassword(passwordEncoder().encode(user.getPassword()));
-        userRepository.save(user);
+        throw new UsernameNotFoundException("User not found");
     }
 
-    public User login(UserAuthorizationDTO authorizationDTO) {
-        return userRepository.findByUsername(authorizationDTO.getUsername());
+    private BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
+
 
     public String getAuthenticationUserName() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
@@ -96,58 +81,34 @@ public class UserService implements UserDetailsService {
         return auth.getName();
     }
 
-    public User getCurrentUser() {
-        return ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-    }
-
-    public boolean existByUsername(String username) {
-        return userRepository.existsByUsername(username);
-    }
-
     public Optional<User> findUserById(Long userId) {
         return userRepository.findById(userId);
     }
 
     public List<User> findAll() {
-        return userRepository.findAll();
+        return userRepository.findAll(Sort.by("username").ascending());
     }
 
+    public Page<User> findAllPaginated(String username, int page, int size) {
+        return userRepository.findAllPaginated(username, PageRequest.of(page - 1, size, Sort.by("username").ascending()));
+    }
 
+    public boolean update(UserRegistrationDTO userRegistrationDTO, long id) {
 
-    public boolean update(User user, long id) {
+        Optional<User> existUser = userRepository.findById(id);
 
-        User existUser = userRepository.getById(id);
-
-        boolean checkParam = false;
-        if (user.getUsername() != null) {
-            existUser.setUsername(user.getUsername());
-            checkParam = true;
-        }
-
-        if (user.getName() != null) {
-            existUser.setName(user.getName());
-            checkParam = true;
-        }
-        if (user.getLastname() != null) {
-            existUser.setLastname(user.getLastname());
-            checkParam = true;
-        }
-        if (user.getPassword() != null) {
-            existUser.setPassword(user.getPassword());
-            checkParam = true;
-        }
-        if (user.getEmail() != null) {
-            existUser.setEmail(user.getEmail());
-            checkParam = true;
-        }
-        if (user.getPosition() != null) {
-            existUser.setPosition(user.getPosition());
-            checkParam = true;
-        }
-        if (checkParam) {
-            userRepository.save(existUser);
+        if (existUser.isPresent()) {
+            User user = UserMapper.INSTANCE.updateUserDtoToUser(userRegistrationDTO, existUser.get().getId());
+            user.setRoles(Set.of(Role.USER));
+            user.setPassword(passwordEncoder().encode(userRegistrationDTO.getPassword()));
+            userRepository.save(user);
+            log.log(Level.INFO, "User is update " + userRegistrationDTO.getUsername());
             return true;
+        } else {
+
+            return false;
         }
-        return false;
+
     }
+
 }

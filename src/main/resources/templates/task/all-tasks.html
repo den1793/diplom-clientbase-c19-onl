@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>All-tasks</title>
@@ -16,19 +16,44 @@
             width: 100%;
         }
 
+        .pagination {
+
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100px;
+        }
+
+        .page-item1 {
+            navbutton_background_color: darkgrey;
+        }
+
+        footer {
+            position: sticky;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 55px;
+        }
+
     </style>
 </head>
 <body>
-<div th:replace="~{_header}"></div>
-<form th:action="@{/task/all-tasks}" th:object="${tasks}" method="get" >
+<div th:replace="~{fragments/header}"></div>
+
+<div sec:authorize="hasAuthority('ADMIN')">
+    <form th:action="@{/task/all-tasks}"></form>
 
     <div style="text-align: center;"><h1>List of Tasks:</h1></div>
     <hr>
     <div class="mb-3">
         <table class="table">
             <thead class="table-light">
-            <tr>
-                <th scope="col">ID</th>
+            <tr class="table-secondary">
+                <th scope="col">№</th>
+                <th scope="col">Status</th>
+                <th scope="col">Created</th>
                 <th scope="col">Creator</th>
                 <th scope="col">Performer</th>
                 <th scope="col">Client</th>
@@ -37,79 +62,50 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="task: ${tasks}" th:action="@{/task/{id}(id=${task.getId()})}" th:method="GET">
+            <tr th:each="task: ${tasks}">
                 <td th:text="${task.getId()} + '  '"/>
+                <td th:text="${task.getStatus()} + '  '"/>
+                <td th:text="${task.getCreatedAt()} + '  '"/>
                 <td th:text="${task.getCreator().getUsername()} + '  '"/>
                 <td th:text="${task.getPerformer().getUsername()} + '  '"/>
                 <td th:text="${task.getClient().getClientName()} + '  '"/>
                 <td th:text="${task.getDescription()} + '  '"/>
                 <td>
-                    <form th:method="GET" th:action="@{/task/{id}(id=${task.getId()})}" th:object="${task}">
-                        <input type="submit"
-                               value="Show details"/></form>
+                    <form th:method="GET" th:action="@{/task/{id}/(id=${task.getId()})}" th:object="${task}">
+                        <input type="submit" value="Details"/></form>
                 </td>
             </tr>
             </tbody>
-    <hr>
         </table>
+        <div class="pagination" th:if="${totalPages > 0}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                    <a th:replace="fragments/all-tasks-paging :: paging(1, '<<', 'First Page')"></a>
+                </li>
+                <li class="page-item font-weight-bold" th:classappend="${currentPage == 1} ? 'disabled'">
+                    <a th:replace="fragments/all-tasks-paging :: paging(${currentPage - 1}, 'Prev', 'Previous Page')"></a>
+                </li>
+                <li class="page-item1" th:if="${currentPage - 2 > 1}">
+                    <a class="page-link" href="#">...</a>
+                </li>
+                <li class="page-item1" th:classappend="${page == currentPage} ? 'active'"
+                    th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 1, currentPage + 2 < totalPages ? currentPage + 2 : totalPages)}">
+                    <a class="page-item1"
+                       th:replace="fragments/all-tasks-paging :: paging(${page}, ${page}, 'Page ' + ${page})"></a>
+                </li>
+                <li class="page-item disabled" th:if="${currentPage + 2 < totalPages}">
+                    <a class="page-link" href="#">...</a>
+                </li>
+                <li class="page-item font-weight-bold" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                    <a th:replace="fragments/all-tasks-paging :: paging(${currentPage + 1},'Next', 'Next Page')"></a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                    <a th:replace="fragments/all-tasks-paging :: paging(${totalPages}, '>>', 'Last Page')"></a>
+                </li>
+            </ul>
+        </div>
     </div>
-    <hr>
-
-</form>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-        crossorigin="anonymous"></script>
+</div>
 </body>
+<div th:replace="fragments/footer :: footer"></div>
 </html>
-
-
-
-
-
-    <!--<p>List of tasks:</p>
-    <div>
-        <table class="table">
-            <thead class="table-light">
-            <tr>
-                <th scope="col">Creator</th>
-                <th scope="col">Performer</th>
-                <th scope="col">Client</th>
-                <th scope="col">Description</th>
-            </tr>
-            </thead>
-            <tbody>
-
-
-
-
-
-            <div th:each="task : ${tasks}">
-                <a th:href="@{/task/{id}(id=${task.getId()})}"
-                   th:text="${task.getCreator().username + ' ' + task.performer.username + ' ' + task.getClient().clientName + ' ' + task.getDescription()}">userName</a>
-
-            </div>
-
-
-
-
-&lt;!&ndash;            <tbody>&ndash;&gt;
-            &lt;!&ndash;<div th:each="task : ${tasks}">
-                <a th:href="@{/task/{id}(id=${task.getId()})}"
-                   th:text="${task.getCreator().username + ' ' + task.performer.username + ' ' + task.getClient().clientName + ' ' + task.getDescription()}">userName</a>
-
-            </div>&ndash;&gt;
-            &lt;!&ndash;<tr th:each="task: ${tasks}">
-                <td th:href="${task.creator} + '  '"/>
-                <td th:text="${task.performer} + '  '"/>
-                <td th:text="${task.client} + '  '"/>
-                <td th:text="${task.description} + '  '"/>
-            </tr>&ndash;&gt;
-&lt;!&ndash;            </tbody>&ndash;&gt;
-        </table>
-    </div>
-    <hr>
-
-</form>
-</body>
-</html>
--->

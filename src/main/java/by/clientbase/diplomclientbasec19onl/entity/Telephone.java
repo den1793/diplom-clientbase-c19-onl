@@ -4,16 +4,15 @@ import lombok.*;
 
 import javax.persistence.*;
 
-/**
- * @author Denis Smirnov on 14.06.2023
- */
+
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Builder
+@ToString
 public class Telephone {
 
     @Id
@@ -22,8 +21,10 @@ public class Telephone {
 
     private String number;
 
+
     @Override
     public String toString() {
         return  number;
     }
+
 }

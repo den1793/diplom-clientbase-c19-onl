@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Task page</title>
@@ -18,47 +18,153 @@
             width: 25%;
         }
 
+        .d-grid {
+            margin-top: -10px;
+        }
+
+        .card-body {
+            text-align: center;
+        }
+
+
         form {
             padding: 14px
         }
+
+        footer {
+            position: sticky;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 55px;
+        }
+
     </style>
 </head>
 <body>
-<div th:replace="~{_header}"></div>
+<div th:replace="~{fragments/header}"></div>
 
-<form th:method="post" th:action="@{/task/{id}(id=${id})}" th:object="${task}">
+<div sec:authorize="hasAuthority('ADMIN')">
+    <div class="container mt-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h2 class="card-title">Task Details:</h2>
+                <p><strong>Task №:</strong> <span th:text="${id}"></span></p>
+                <p><strong>Created At:</strong> <span th:text="${task.getCreatedAt()}"></span></p>
+                <p><strong>Creator:</strong> <span th:text="${task.getCreator().getUsername()}"></span></p>
+                <p><strong>Client:</strong> <span th:text="${task.getClient().getClientName()}"></span></p>
+                <p><strong>Attachment:</strong>
 
-    <div style="text-align: center;"><h2>Task information:</h2></div>
+                <ul th:if="${not #lists.isEmpty(task.attachments)}">
+                    <li class="mb-3" th:each="attachmentInfo : ${task.getAttachments()}">
+                        <a class="mb-3" th:href="@{/task/{taskId}/download/{attachmentId}(taskId=${task.getId()},
+                        attachmentId=${attachmentInfo.getId()})}">
+                            <span th:text="${attachmentInfo.fileName}"></span>
+                        </a>
+                    </li>
+                </ul>
+                <p th:unless="${not #lists.isEmpty(task.attachments)}">No files to download</p>
 
-    <div class="mb-3">
-        <label for="NameOfCreator" class="form-label">Name of Creator</label>
-        <input type="text" class="form-control" th:field="*{creator.username}" id="NameOfCreator">
-        <p th:if="${#fields.hasErrors('creator.username')}" th:errors="*{creator.username}"></p>
-    </div>
-    <div class="mb-3">
-        <label for="NameOfPerformer" class="form-label">Name of Performer</label>
-        <input type="text" class="form-control" th:field="*{performer.username}" id="NameOfPerformer">
-        <p th:if="${#fields.hasErrors('performer.username')}" th:errors="*{performer.username}"></p>
-    </div>
-    <div class="mb-3">
-        <label for="NameOfClient" class="form-label">Name of Client</label>
-        <input type="text" class="form-control" th:field="*{client.clientName}" id="NameOfClient">
-        <p th:if="${#fields.hasErrors('client.clientName')}" th:errors="*{client.clientName}"></p>
-    </div>
-    <div class="mb-3">
-        <label for="Description" class="form-label">Description</label>
-        <input type="text" class="form-control" th:field="*{description}" id="Description">
-        <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
-    </div>
-    <div style="text-align:center">
-        <button class="btn btn-secondary">Edit</button>
-    </div>
-</form>
 
-<form th:method="DELETE" th:action="@{/task/{id}(id=${id})}">
-    <div style="text-align:center">
-        <button class="btn btn-secondary">Delete</button>
+                <form th:method="PUT" th:action="@{/task/{id}/(id=${id})}" th:object="${task}">
+                    <div class="mb-3">
+                        <label for="taskStatus" class="form-label"><strong>Status:</strong></label>
+                        <select class="form-select" id="taskStatus" name="status" required th:field="*{status}">
+                            <option value="NEW">NEW</option>
+                            <option value="DONE">Done</option>
+                            <option value="IN_PROGRESS">In Progress</option>
+                            <option value="BACKLOG">Backlog</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Performer" class="form-label"><strong>Performer:</strong></label>
+                        <select th:field="*{performer}" class="form-select" id="Performer">
+                            <option th:each="performer : ${performers}"
+                                    th:text="${performer.getUsername()}"
+                                    th:value="${performer.getId()}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleFormControlTextarea1"
+                               class="form-label"><strong>Description:</strong></label>
+                        <textarea class="form-control" th:field="*{description}" id="exampleFormControlTextarea1"
+                                  rows="1"></textarea>
+                        <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+                    </div>
+                    <div class="d-grid gap-2 col-3 mx-auto">
+                        <button type="submit" class="btn btn-secondary">Edit</button>
+                    </div>
+                </form>
+                </form>
+                <form th:method="PUT" th:action="@{/task/send/{id}(id=${id})}">
+                    <div class="d-grid gap-2 col-3 mx-auto">
+                        <button type="submit" class="btn btn-secondary">Send to Email</button>
+                    </div>
+                </form>
+
+                <form th:method="POST" th:action="@{/task/{id}/upload(id=${task.id})}" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="file" class="form-label"><strong>Attach Files:</strong></label>
+                        <input type="file" class="form-control" id="file" name="file" multiple>
+                    </div>
+                    <div class="d-grid gap-1 col-3 mx-auto">
+                        <button type="submit" class="btn btn-secondary">Add Attachment</button>
+                    </div>
+                </form>
+                <form th:method="DELETE" th:action="@{/task/{id}(id=${id})}">
+                    <div class="d-grid gap-1 col-3 mx-auto">
+                        <button type="submit" class="btn btn-secondary">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-</form>
+
+
+    <div sec:authorize="hasAuthority('USER')">
+        <div class="container mt-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h2 class="card-title">Task Details</h2>
+                    <p><strong>Task №:</strong> <span th:text="${id}"></span></p>
+                    <p><strong>Created At:</strong> <span th:text="${task.getCreatedAt()}"></span></p>
+                    <p><strong>Creator:</strong> <span th:text="${task.getCreator().getUsername()}"></span></p>
+                    <p><strong>Client:</strong> <span th:text="${task.getClient().getClientName()}"></span></p>
+
+                    <form th:method="PUT" th:action="@{/task/{id}/(id=${id})}" th:object="${task}">
+                        <div class="mb-3">
+                            <label for="taskStatus" class="form-label"><strong>Status:</strong></label>
+                            <select class="form-select" id="taskStatus" name="status" required
+                                    th:field="*{status}">
+                                <option value="NEW">NEW</option>
+                                <option value="DONE">Done</option>
+                                <option value="IN_PROGRESS">In Progress</option>
+                                <option value="BACKLOG">Backlog</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleFormControlTextarea1"
+                                   class="form-label"><strong>Description</strong></label>
+                            <textarea class="form-control" th:field="*{description}"
+                                      id="exampleFormControlTextarea1"
+                                      rows="3"></textarea>
+                            <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+                        </div>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-secondary">Edit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N"
+        crossorigin="anonymous"></script>
+<div th:insert="fragments/footer :: footer"></div>
 </body>
 </html>

@@ -1,45 +1,23 @@
 package by.clientbase.diplomclientbasec19onl.mapper;
 
 import by.clientbase.diplomclientbasec19onl.dto.UserRegistrationDTO;
-import by.clientbase.diplomclientbasec19onl.entity.SessionUser;
-import by.clientbase.diplomclientbasec19onl.entity.Telephone;
 import by.clientbase.diplomclientbasec19onl.entity.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * @author Denis Smirnov on 03.08.2023
- */
-public class UserMapper {
-    public static SessionUser toSessionUser(User user) {
-        SessionUser sessionUser = new SessionUser();
-        sessionUser.setId(user.getId());
-        sessionUser.setName(user.getName());
-        sessionUser.setUsername(user.getUsername());
-        return sessionUser;
-    }
+@Mapper(componentModel = "spring")
+@Component
+public interface UserMapper {
 
-    public static User toUser(UserRegistrationDTO registrationDTO) {
-        return User.builder()
-                .name(registrationDTO.getName())
-                .lastname(registrationDTO.getLastname())
-                .username(registrationDTO.getUsername())
-                .password(registrationDTO.getPassword())
-                .email(registrationDTO.getPosition())
-                .position(registrationDTO.getPosition())
-                .telephones(List.of(Telephone.builder()
-                        .number(registrationDTO.getTelephone())
-                        .build()))
-                .build();
-    }
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    public static UserRegistrationDTO toDto(User user){
-        UserRegistrationDTO userDTO = new UserRegistrationDTO();
-        userDTO.setUser_id(user.getId());
-        userDTO.setUsername(user.getUsername());
-        return userDTO;
-    }
+    UserRegistrationDTO userToDto(User user);
 
+    User dtoToUser(UserRegistrationDTO registrationDTO);
+
+    User updateUserDtoToUser (UserRegistrationDTO registrationDTO, long id);
 }
+
+

@@ -1,57 +1,56 @@
 package by.clientbase.diplomclientbasec19onl.service;
 
 import by.clientbase.diplomclientbasec19onl.dto.TaskDTO;
-import by.clientbase.diplomclientbasec19onl.dto.UserRegistrationDTO;
-import by.clientbase.diplomclientbasec19onl.entity.Client;
 import by.clientbase.diplomclientbasec19onl.entity.Task;
 import by.clientbase.diplomclientbasec19onl.entity.User;
 import by.clientbase.diplomclientbasec19onl.mapper.TaskMapper;
-import by.clientbase.diplomclientbasec19onl.mapper.UserMapper;
 import by.clientbase.diplomclientbasec19onl.repository.TaskRepository;
-import by.clientbase.diplomclientbasec19onl.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-/**
- * @author Denis Smirnov on 14.06.2023
- */
+
 @Service
+@Transactional
 public class TaskService {
 
-    private final TaskRepository taskRepository;
+    @Autowired
+    private TaskRepository taskRepository;
 
-    private final UserService userService;
 
-    private final ClientService clientService;
+    private final Logger log = Logger.getLogger(TaskService.class.getName());
 
-    TaskService(TaskRepository taskRepository, UserService userService, ClientService clientService) {
-        this.taskRepository = taskRepository;
-        this.userService = userService;
-        this.clientService = clientService;
+
+    public boolean save(TaskDTO taskDTO) {
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) loggedInUser.getPrincipal();
+
+        Task task = TaskMapper.INSTANCE.dtoToTask(taskDTO);
+
+        task.setCreator(user);
+        task.setCreatedAt(LocalDate.now());
+        task.setPerformer(taskDTO.getPerformer());
+        task.setClient(taskDTO.getClient());
+        task.setStatus(taskDTO.getStatus());
+        task.setDescription(taskDTO.getDescription());
+
+
+        taskRepository.save(task);
+        log.log(Level.INFO, "Task saved " + task.getId());
+
+        return true;
     }
-
-
-    public Task save(TaskDTO taskDTO) {
-        Task task = Task.builder()
-                .creator(userService.findByUsername(taskDTO.getCreator()))
-                .performer(userService.findByUsername(taskDTO.getPerformer()))
-                .client(clientService.findByClientName(taskDTO.getClient()))
-                .description(taskDTO.getDescription())
-                .build();
-
-        return taskRepository.save(task);
-    }
-
-    public void deleteTaskById(long id) {
-        taskRepository.deleteById(id);
-    }
-
-    public boolean existsByName(Task task){
-        return taskRepository.existsById(task.getId());
-    }
-
 
     public Optional<Task> findById(long id) {
         return taskRepository.findById(id);
@@ -62,36 +61,42 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-
-
-    public boolean update(Task task, long id) {
-
-        Task existTask = taskRepository.getById(id);
-
-        boolean checkParam = false;
-        if (task.getCreator() != null) {
-            existTask.setCreator(task.getCreator());
-            checkParam = true;
-        }
-
-        if (task.getPerformer() != null) {
-            existTask.setPerformer(task.getPerformer());
-            checkParam = true;
-        }
-        if (task.getClient() != null) {
-            existTask.setClient(task.getClient());
-            checkParam = true;
-        }
-        if (task.getDescription() != null) {
-            existTask.setDescription(task.getDescription());
-            checkParam = true;
-        }
-        if (checkParam) {
-            taskRepository.save(existTask);
-            return true;
-        }
-        return false;
+    public Page<Task> findAllPaginated(int page, int size) {
+        return taskRepository.findAllPaginated(PageRequest.of(page-1, size));
     }
 
 
+    public Page<Task> findByUser(int page, int size) {
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) loggedInUser.getPrincipal();
+        return taskRepository.findByPerformer(user.getId(), PageRequest.of(page-1, size));
+    }
+
+
+    public boolean update(TaskDTO taskDTO, long id) {
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) loggedInUser.getPrincipal();
+
+        Optional<Task> existTask = taskRepository.findById(id);
+
+        if (existTask.isPresent()) {
+            Task task = TaskMapper.INSTANCE.updateTaskDtoToTask(taskDTO, existTask.get().getId());
+
+            task.setPerformer(taskDTO.getPerformer());
+            task.setCreatedAt(existTask.get().getCreatedAt());
+            task.setCreator(existTask.get().getCreator());
+            task.setClient(existTask.get().getClient());
+            task.setStatus(taskDTO.getStatus());
+            task.setDescription(taskDTO.getDescription());
+            taskRepository.save(task);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void deleteTaskById(long id) {
+        taskRepository.deleteById(id);
+    }
 }

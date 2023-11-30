@@ -5,9 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
-/**
- * @author Denis Smirnov on 14.06.2023
- */
 
 @Controller
 @RequestMapping("/")

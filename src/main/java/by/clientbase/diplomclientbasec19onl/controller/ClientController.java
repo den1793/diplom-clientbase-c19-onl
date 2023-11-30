@@ -1,25 +1,20 @@
 package by.clientbase.diplomclientbasec19onl.controller;
+
 import by.clientbase.diplomclientbasec19onl.dto.ClientDTO;
-import by.clientbase.diplomclientbasec19onl.dto.TaskDTO;
 import by.clientbase.diplomclientbasec19onl.entity.Client;
-import by.clientbase.diplomclientbasec19onl.entity.Task;
-import by.clientbase.diplomclientbasec19onl.mapper.ClientMapper;
-import by.clientbase.diplomclientbasec19onl.mapper.TaskMapper;
+
 import by.clientbase.diplomclientbasec19onl.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
-/**
- * @author Denis Smirnov on 14.06.2023
- */
+
 @Controller
 @RequestMapping("/client")
 public class ClientController {
@@ -34,34 +29,48 @@ public class ClientController {
     }
 
     @PostMapping("/create")
-    public String addClient(@ModelAttribute("newClient") @Valid ClientDTO clientDTO, BindingResult bindingResult, Model model) {
+    public String addClient(@ModelAttribute("newClient") @Valid ClientDTO clientDTO,
+                            BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             return "/client/create";
-        }
-        Client byClientName = clientService.findByClientName(clientDTO.getClientName());
-        if (byClientName != null) {
-            model.addAttribute("message", "Client with this name is already exist");
-            model.addAttribute("newClient", clientDTO);
-            return "/client/create";
         } else {
-            clientService.save(clientDTO);
-            return "redirect:/client/all-clients";
+            boolean isClientExist = clientService.save(clientDTO);
+            if (isClientExist) {
+                return "redirect:/client/all-clients";
+            } else {
+                model.addAttribute("message", "Client with this name is already exist");
+                model.addAttribute("newClient", clientDTO);
+                return "/client/create";
+            }
         }
     }
 
     @GetMapping("/all-clients")
-    public String showAllClients(Model model, HttpSession httpSession) {
-        List<Client> clients = clientService.findAll();
-        model.addAttribute("clients", clients);
+    public String showAllClients(Model model,
+                                 @RequestParam(required = false) String clientName,
+                                 @RequestParam(defaultValue = "1") int page,
+                                 @RequestParam(defaultValue = "15") int size) {
+
+        Page<Client> clientPage = clientService.findAllPaginated(clientName, page, size);
+        List<Client> clientList = clientPage.getContent();
+        model.addAttribute("clients", clientList);
+        model.addAttribute("currentPage", clientPage.getNumber() + 1);
+        model.addAttribute("totalItems", clientPage.getTotalElements());
+        model.addAttribute("totalPages", clientPage.getTotalPages());
+        model.addAttribute("pageSize", size);
         return "/client/all-clients";
     }
 
     @GetMapping("/{id}")
-    public String showById(@PathVariable("id") long id, Model model) {
-        Optional<Client> optionalClient = clientService.findById(id);
-        Client client = optionalClient.orElse(null);
-        model.addAttribute("client", client);
+    public String showById(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("client", clientService.findById(id));
         return "client/client";
+    }
+
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable Long id) {
+        clientService.deleteClientById(id);
+        return "redirect:/client/all-clients";
     }
 
     @GetMapping("/{id}/edit")
@@ -70,21 +79,15 @@ public class ClientController {
         return "/client/client";
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     public String update(@ModelAttribute("client") @Valid ClientDTO clientDTO,
                          BindingResult bindingResult,
                          @PathVariable("id") Long id) {
         if (bindingResult.hasErrors()) {
             return "/client/client";
         }
-
-        clientService.update(ClientMapper.toClient(clientDTO), id);
+        clientService.update(clientDTO, id);
         return "/client/client";
     }
 
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") long id) {
-        clientService.deleteClientById(id);
-        return "redirect:/client/all-clients";
-    }
 }

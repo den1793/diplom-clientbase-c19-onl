@@ -5,10 +5,9 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.List;
 
-/**
- * @author Denis Smirnov on 14.06.2023
- */
+
 @Entity
+@Data
 @Table(name = "clients")
 @Setter
 @Getter
@@ -20,12 +19,19 @@ public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
+    @Column(unique = true, length = 40, nullable = false)
     private String clientName;
 
+    @Column(nullable = false, length = 40)
+    private String supervisorName;
 
-    private String description;
+    @Column(nullable = false, length = 40)
+    private String email;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Telephone> telephones;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Address> addresses;
